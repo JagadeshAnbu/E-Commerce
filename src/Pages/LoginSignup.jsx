@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import './CSS/LoginSignup.css'
 
 const LoginSignup = () => {
-    const userRef = useRef(null); // Initialize with null
-    const pwdRef = useRef(null); // Initialize with null
+    const userRef = useRef(null); 
+    const pwdRef = useRef(null); 
     const errRef = useRef(null);
 
     const [user, setUser] = useState('');
