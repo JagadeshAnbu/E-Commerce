@@ -1,11 +1,13 @@
 import React, { useContext } from 'react'
 import './CSS/ShopCategory.css'
-import { ShopContext } from '../Context/ShopContext'
 import dropdown_icon from '../Components/Assets/dropdown_icon.png'
 import Item from '../Components/Item/Item'
+import { ShopContext } from '../Context/ShopContext'
+// import data_product from '../Components/Assets/data'
 
 const ShopCategory = (props) => {
-  const {all_product} = useContext(ShopContext);
+  const {products} = useContext(ShopContext);
+  // console.log('jaga alled hereeeee',products);
   return (
     <div className='shop-category'>
       <img className='shopcategory-banner' src={props.banner} alt='' />
@@ -19,22 +21,30 @@ const ShopCategory = (props) => {
       </div>
       
       <div className='shopcategory-products'>
-        {all_product.map((item, i)=> {
-          if(props.category===item.category){
+
+      {/* {data_product.map((item, i)=>{
                 return <Item key={i} id={item.id} name={item.name} image={item.image}
                 new_price={item.new_price} old_price={item.old_price}/>
+            })}
+             */}
+        {products.map((item, i)=> {
+          if(props.category===item.category){
+                  return <Item key={i} id={item.id} name={item.name} image={item.image}
+                  newPrice={item.newPrice} oldPrice={item.oldPrice}/>
+          // if(props.category===item.category){
+                // return <Item key={i} id={item.id} name={item.title} image={item.thumbnail}
+                // new_price={item.price - item.price / 100 * item.discountPercentage } old_price={item.price}/>
           }
           else{
-            return null;
+          return null;
           }
         })}
-      </div>
 
+      </div>
       <div className='shopcategory-loadmore'>
         Explore More
       </div>
     </div>
   ) 
 }
-
 export default ShopCategory

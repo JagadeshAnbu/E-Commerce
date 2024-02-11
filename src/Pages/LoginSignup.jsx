@@ -1,75 +1,80 @@
-import React, { useEffect, useRef, useState } from 'react'
+   import React, {useState } from 'react'
 import './CSS/LoginSignup.css'
 
-const LoginSignup = () => {
-    const userRef = useRef(null); 
-    const pwdRef = useRef(null); 
-    const errRef = useRef(null);
-
-    const [user, setUser] = useState('');
-    const [pwd, setPwd] = useState('');
-    const [errMsg, setErrMsg] = useState('');
-    const [success, setSuccess] = useState(false);
-
-    useEffect(() => {
-        userRef.current.focus();
-    }, []);
-
-    useEffect(() => {
-        setErrMsg('');
-    }, [user, pwd]);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        console.log(user, pwd);
-        setUser('');
-        setPwd('');
-        setSuccess(true);
+const LoginSignup = () => {    
+    const [state, setState] = useState("Login")
+    const[formData, setFormData] = useState({
+        username:"",
+        password:"",
+        email:""
+    })
+    const changeHandler =(e)=>{
+        setFormData({...formData,[e.target.name]:e.target.value});
     }
-
+    const login = async()=>{
+        console.log("Login Function Executed", formData);
+    }
+    const signup = async () => {
+        console.log("Signup Function Executed", formData);
+    
+        try {
+            const response = await fetch('https://localhost:44300/api/v1/User/Register', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to register user');
+            }
+    
+            const responseData = await response.json();
+    
+            if (responseData.success) {
+                localStorage.setItem('auth-token', responseData.token);
+                window.location.replace("/");
+            } else {
+                // Handle unsuccessful registration
+                console.error('Registration failed:', responseData.error);
+                // Display error message to the user
+            }
+        } catch (error) {
+            // Handle fetch errors
+            console.error('Fetch error:', error.message);
+            // Display error message to the user
+        }
+    }
+    
     return (
         <>
-            {success ? (
-                <section>
-                    <h1>You are logged in!</h1>
-                </section>
-            ) : (
                 <section>
                     <div className='loginsignup'>
-                        <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
                         <div className='loginsignup-container'>
-                            <h1>Sign Up</h1>
-                            <form onSubmit={handleSubmit} className='loginsignup-fields'>
-                                <input
-                                    type="text"
-                                    id="username"
-                                    ref={userRef}
-                                    autoComplete="off"
-                                    onChange={(e) => setUser(e.target.value)}
-                                    value={user}
-                                    required
-                                    placeholder='Your Name' />
-
-                                <input
+                            <h1>{state}</h1>
+                            <form className='loginsignup-fields'>
+                                {state==="Sign Up"?<input name='username' value={formData.username} onChange={changeHandler}
+                                    placeholder='Your Name' />:<></>}
+                                <input name='email' value={formData.email} onChange={changeHandler} type='email' placeholder='Email Address'/>
+                                <input name='password' value={formData.password} onChange={changeHandler}
                                     type='password'
-                                    id="password"
-                                    ref={pwdRef}
-                                    onChange={(e) => setPwd(e.target.value)}
-                                    value={pwd}
-                                    required
                                     placeholder='Password' />
-                                <button type="submit">Continue</button>
-                            </form>
-                            <p className='loginsignup-login'>Already have an account <span>Login here</span></p>
-                            <div className='logisignup-agree'>
+                                <button onClick={()=>{state==="Login"?login():signup()}} type="submit">Continue
+                                </button>
+                                {state==="Sign Up"?<p className='loginsignup-login'>Already have an account <span onClick={()=>{setState("Login")}}>Login here</span></p>
+                                :<p className='loginsignup-login'>Create an account? <span onClick={()=>{setState("Sign Up")}}>Click </span></p>}
+                            </form> 
+                            <div className='loginsignup-agree'>
                                 <input type="checkbox" name='' id='' />
                                 <p>By continuing, I agree to the terms of use & privacy policy.</p>
                             </div>
                         </div>
                     </div>
                 </section>
-            )}
         </>
     )
 }
-export default LoginSignup
+
+export default LoginSignup;

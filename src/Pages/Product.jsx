@@ -6,10 +6,10 @@ import ProductDisplay from '../Components/ProductDisplay/ProductDisplay';
 import DescriptionBox from '../Components/DescriptionBox/DescriptionBox';
 import RelatedProducts from '../Components/RelatedProducts/RelatedProducts';
 
-const Product = () => {
-  const {all_product} = useContext(ShopContext);
+const Products = () => {
+  const {products} = useContext(ShopContext);
   const {productId} = useParams();
-  const product = all_product.find((e)=>e.id === Number(productId));
+  const product = products.find((e)=>e.id === Number(productId));
   return (
     <div>
       <Breadcrum product={product}/>
@@ -20,4 +20,4 @@ const Product = () => {
   )
 }
 
-export default Product
+export default Products
