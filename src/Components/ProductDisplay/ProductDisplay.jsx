@@ -7,6 +7,10 @@ import { ShopContext } from '../../Context/ShopContext'
 const ProductDisplay = (props) => {
     const {product} = props;
     const {addToCart} = useContext(ShopContext);
+
+    if (!product) {
+        return null; // Or render some placeholder content
+    }
   return (
     <div className='productdisplay'>
         <div className='productdisplay-left'>
@@ -21,7 +25,7 @@ const ProductDisplay = (props) => {
             </div>
         </div>
         <div className='productdisplay-right'>
-            <h1>{product.name}</h1>
+            <h1>{product.productName}</h1>
             <div className='productdisplay-right-star'>
                 <img src={star_icon} alt=''/>
                 <img src={star_icon} alt=''/>
@@ -49,7 +53,7 @@ const ProductDisplay = (props) => {
                     <div>XXL</div>
                 </div>
             </div>
-            <button onClick={()=>{addToCart(product.id, product.name, product.newPrice)}}>ADD TO CART</button>
+            <button onClick={()=>{addToCart(product.productId)}}>ADD TO CART</button>
             <p className='productdisplay-right-category'><span>Category : </span>Women, T-Shirt, Crop Top</p>
             <p className='productdisplay-right-category'><span>Tags : </span>Modern, Latest</p>
         </div>
