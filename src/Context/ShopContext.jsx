@@ -1,12 +1,18 @@
 import React, { createContext, useState, useEffect } from "react";
 import all_product from "../Components/Assets/all_product";
+import {jwtDecode} from "jwt-decode"; // Import jwtDecode from the appropriate package
+
 export const ShopContext = createContext(null);
 
 const ShopContextProvider = (props) => {
     
     const [products, setProducts] = useState([]);
     const [cartItems, setCartItems] = useState([]);
-    const UserId = 123;
+    const [UserId, setUserId] = useState(null); // State to store the decoded user ID
+    console.log("User ID:", UserId);
+
+
+    // const UserId = 123;
 
     // Get call to fetch products
     useEffect(() => {
@@ -20,15 +26,34 @@ const ShopContextProvider = (props) => {
             .catch((error) => {
                 console.error("Error fetching products:", error);
             });
+
+        // Retrieve JWT token from local storage
+        const jwtToken = localStorage.getItem("jwtToken");
+        console.log("JWT Token:", jwtToken);
+
+        if (jwtToken) {
+            try {
+                const decodedToken = jwtDecode(jwtToken);
+                console.log("Decoded Token:", decodedToken);
+                if (decodedToken && decodedToken.UserId !== undefined) {
+                    console.log("User ID found in decoded token:", decodedToken.UserId);
+                    setUserId(decodedToken.UserId); // Set the decoded user ID
+                } else {
+                    console.error("User ID not found in decoded token:", decodedToken);
+                }
+            } catch (error) {
+                console.error("Error decoding JWT token:", error);
+            }            
+        }
     }, []);
 
     // Function to add item to cart
-    const addToCart = (productId) => {
+    const addToCart = (productId, quantity) => {
         setCartItems((prev) => ({ ...prev, [productId]: prev[productId] ? prev[productId] + 1 : 1 }));
         fetch('https://localhost:7236/api/Cart/addtocart', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ productId, UserId: 123, Quantity: 1 })
+            body: JSON.stringify({ productId, UserId, quantity})
         })
             .then((response) => {
                 if (!response.ok) {

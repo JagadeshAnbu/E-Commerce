@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import './ProductDisplay.css'
 import star_icon from "../Assets/star_icon.png"
 import star_dull_icon from "../Assets/star_dull_icon.png"
@@ -7,10 +7,22 @@ import { ShopContext } from '../../Context/ShopContext'
 const ProductDisplay = (props) => {
     const {product} = props;
     const {addToCart} = useContext(ShopContext);
+    const [quantity, setQuantity] = useState(1);
 
     if (!product) {
         return null; // Or render some placeholder content
     }
+
+    const increaseQuantity = () => {
+        setQuantity(prevQuantity => prevQuantity + 1);
+    };
+
+    const decreaseQuantity = () => {
+        if (quantity > 1) {
+            setQuantity(prevQuantity => prevQuantity - 1);
+        }
+    };
+
   return (
     <div className='productdisplay'>
         <div className='productdisplay-left'>
@@ -53,7 +65,16 @@ const ProductDisplay = (props) => {
                     <div>XXL</div>
                 </div>
             </div>
-            <button onClick={()=>{addToCart(product.productId)}}>ADD TO CART</button>
+            <div className="productdisplay-right-quantity">
+                    <h1>Quantity</h1>
+                    <div className='productdisplay-right-quantity-controls'>
+                        <button className="quantity-btn" onClick={decreaseQuantity}>-</button>
+                        <p>{quantity}</p>
+                        <button className="quantity-btn" onClick={increaseQuantity}>+</button>
+                    </div>
+            </div>
+
+            <button onClick={()=>{addToCart(product.productId, quantity)}}>ADD TO CART</button>
             <p className='productdisplay-right-category'><span>Category : </span>Women, T-Shirt, Crop Top</p>
             <p className='productdisplay-right-category'><span>Tags : </span>Modern, Latest</p>
         </div>
