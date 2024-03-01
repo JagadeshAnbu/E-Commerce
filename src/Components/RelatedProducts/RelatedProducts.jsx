@@ -1,25 +1,26 @@
   import React, {useEffect, useState } from 'react'
   import './RelatedProducts.css'
   import Item from '../Item/Item'
-  // import { ShopContext } from '../../Context/ShopContext'
+
 
   const RelatedProducts = (props) => {
     const {product} = props;
     const [productsList, setProductsList] = useState([]);
-    // const {addToCart} = useContext(ShopContext);
 
     // Fetch related products when the component mounts
     useEffect(() => {
-      fetch(`https://localhost:7236/api/Cart/relatedproducts/${product.productId}`)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Fetched products:", data);
-          setProductsList(data);
-        })
-        .catch((error) => {
-          console.error("Error fetching products:", error);
-        });
-    }, [product.productId]);
+      if (product && product.productId) {
+        fetch(`https://localhost:7236/api/Cart/relatedproducts/${product.productId}`)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Fetched products:", data);
+            setProductsList(data);
+          })
+          .catch((error) => {
+            console.error("Error fetching products:", error);
+          });
+      }
+    }, [product]);
 
     return (
       <div className='relatedproducts'>
@@ -35,10 +36,7 @@
                   oldPrice={product.oldPrice}/>
                   
           ))}
-              {/* {Array.isArray(productsList) && productsList.map((item,i)=>{
-                  return <Item key={i} id={item.id} name={item.productName} image={item.image}
-                  newPrice={item.newPrice} oldPrice={item.oldPrice}/>
-              })} */}
+
         </div>
       </div>
     )

@@ -1,15 +1,12 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client'; // Import createRoot from react-dom
 import './index.css';
 import App from './App';
 import ShopContextProvider from './Context/ShopContext';
 
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = createRoot(document.getElementById('root')); // Use createRoot
 root.render(
   <ShopContextProvider>
-    <App/>
+    <App />
   </ShopContextProvider>
 );
-
-

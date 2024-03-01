@@ -20,18 +20,22 @@ const ShopCategory = (props) => {
       </div>
       
       <div className='shopcategory-products'>
-          {products.map((product, i)=>{
-              if(props.category === product.category){
-                return <Item key={i} 
-                             productId={product.productId} 
-                             name={product.productName} 
-                             image={product.image}
-                             newPrice={product.newPrice} 
-                             oldPrice={product.oldPrice}/>
-              } else {
-                return null;
-              }
-          })}
+        {products.map((product) => {
+          if (product.category === props.category) {
+            return (
+              <Item
+                key={product.productId} 
+                productId={product.productId} 
+                name={product.productName} 
+                image={product.image}
+                newPrice={product.newPrice} 
+                oldPrice={product.oldPrice}
+              />
+            );
+          } else {
+            return null;
+          }
+        })}
       </div>
 
       <div className='shopcategory-loadmore'>
