@@ -7,6 +7,7 @@ const ShopContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState({});
   const [UserId, setUserId] = useState(null);
+  
 
   // Update the updateCartItemQuantity function to accept selectedSize
   const updateCartItemQuantity = (productId, quantity) => {
@@ -20,7 +21,6 @@ const ShopContextProvider = (props) => {
     }));
   };
     
-
   // Function to fetch cart items by user ID
   const getCartItemsByUserId = useCallback(() => {
     if (UserId) {
@@ -50,11 +50,9 @@ const ShopContextProvider = (props) => {
     }
   }, [UserId]);
   
-
   useEffect(() => {
     getCartItemsByUserId();
   }, [UserId, getCartItemsByUserId]);
-
 
   useEffect(() => {
     console.log('Fetching products...');
@@ -68,8 +66,8 @@ const ShopContextProvider = (props) => {
         console.error("Error fetching products:", error);
       });
 
+      //Getting JWT token form local storage
       const jwtToken = localStorage.getItem("jwtToken");
-
       if (jwtToken) {
         try {
           const decodedToken = jwtDecode(jwtToken);
@@ -86,62 +84,84 @@ const ShopContextProvider = (props) => {
       }
     }, []);
 
+    const getUserId = () => UserId;
+    ; // Define getUserId function
+
     const addToCart = (productId, quantity, selectedSize) => {
-  console.log(`Adding product ${productId} to cart with quantity ${quantity} and selected size ${selectedSize}`);
-  const userId = parseInt(UserId);
+      console.log(`Adding product ${productId} to cart with quantity ${quantity} and selected size ${selectedSize}`);
+      const userId = parseInt(UserId);
 
-  const payload = {
-    userId: userId,
-    productId: productId,
-    quantity: quantity,
-    selectedSize: selectedSize,
-    Product: {
-      productId: productId,
-      // Other product properties here...
-    }
-  };
-
-  console.log('Serialized Payload:', JSON.stringify(payload));
-
-  fetch('https://localhost:7236/api/Cart/addtocart', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error('Failed to add item to cart');
-    }
-    return response.json();
-  })
-  .then((data) => {
-    if (data && data.productId) {
-      console.log('Response from addToCart:', data);
-      // Update the cart items state by adding the new item
-      setCartItems((prevCartItems) => ({
-        ...prevCartItems,
-        [data.productId]: {
-          productId: data.productId,
-          quantity: data.quantity,
-          selectedSize: data.selectedSize,
-          // Other properties if needed
-        }
-      }));
-
-      // Fetch updated cart items after adding to cart
-        console.log('Fetching cart items after adding product...');
-         getCartItemsByUserId(); // Call function to fetch cart items
-         console.log(getCartItemsByUserId)
-    } else {
-      console.error('Invalid response received from addToCart endpoint:', data);
-    }
-  })
-  .catch((error) => console.error('Error adding item to cart:', error));
-};
-
+      const productDetails = products.find((product) => product.productId === productId);
+      const unitPrice = productDetails.newPrice;
+      const totalPrice = unitPrice * quantity;
     
-       
+      const payload = {
+        userId: userId,
+        productId: productId,
+        quantity: quantity,
+        selectedSize: selectedSize,
+        unitPrice: unitPrice,
+        totalPrice: totalPrice,
+        Product: {
+          productId: productId,
+        }
+      };
+    
+      console.log('Serialized Payload:', JSON.stringify(payload));
+      fetch('https://localhost:7236/api/Cart/addtocart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to add item to cart');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data && data.productId) {
+          console.log('Response from addToCart:', data);
+    
+          // Find the product details
+          const productDetails = products.find((product) => product.productId === productId);
+          
+          // Calculate total price
+          const unitPrice = productDetails.newPrice;
+          const totalPrice = unitPrice * quantity;
+    
+          console.log('Unit Price:', unitPrice);
+          console.log('Total Price:', totalPrice);
+    
+          // Update the cart items state by adding the new item with price details
+          setCartItems((prevCartItems) => ({
+            ...prevCartItems,
+            [data.productId]: {
+              productId: data.productId,
+              quantity: data.quantity,
+              selectedSize: data.selectedSize,
+              unitPrice: unitPrice, // Include unitPrice
+              totalPrice: totalPrice, // Include totalPrice
+              // Other properties if needed
+            }
+          }));
+    
+          // Fetch updated cart items after adding to cart
+          console.log('Fetching cart items after adding product...');
+          getCartItemsByUserId(); // Call function to fetch cart items
+        } else {
+          console.error('Invalid response received from addToCart endpoint:', data);
+        }
+      })
+      .catch((error) => console.error('Error adding item to cart:', error));
+    };
+    
   const removeFromCart = (productId) => {
+    if (productId == null) { // Checks for both null and undefined
+      console.warn('Cannot remove from cart: productId is undefined');
+      return;
+    }
+  
     fetch(`https://localhost:7236/api/Cart/removefromcart/${productId}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -150,6 +170,7 @@ const ShopContextProvider = (props) => {
         if (!response.ok) {
           throw new Error('Failed to remove item from cart');
         }
+  
         console.log('Item removed from cart');
         setCartItems((prevCartItems) => {
           const updatedCartItems = { ...prevCartItems };
@@ -159,19 +180,11 @@ const ShopContextProvider = (props) => {
       })
       .catch((error) => console.error('Error removing item from cart:', error));
   };
-
-  // const getTotalCartAmount = () => {
-  //   let totalAmount = 0;
-  //   for (const item in cartItems) {
-  //     if (cartItems[item] > 0) {
-  //       let itemInfo = all_product.find((product) => product.id === Number(item))
-  //       totalAmount += itemInfo.new_price * cartItems[item];
-  //     }
-  //   }
-  //   return totalAmount;
-  // }
-
-
+  
+  const clearCart = () => {
+    setCartItems({});
+  };
+  
   const getTotalCartAmount = () => {
     let totalAmount = 0;
     for (const productId in cartItems) {
@@ -180,19 +193,7 @@ const ShopContextProvider = (props) => {
     }
     return totalAmount;
   };
-  
-  
-
-  // const getTotalCartItems = () => {
-  //   let totalItem = 0;
-  //   for (const item in cartItems) {
-  //     if (cartItems[item] > 0) {
-  //       totalItem += cartItems[item];
-  //     }
-  //   }
-  //   return totalItem;
-  // }
-
+    
   const getTotalCartItems = () => {
     let totalItem = 0;
     for (const productId in cartItems) {
@@ -201,7 +202,6 @@ const ShopContextProvider = (props) => {
     return totalItem;
   };
   
-
   const contextValue = {
     products,
     updateCartItemQuantity,
@@ -211,7 +211,9 @@ const ShopContextProvider = (props) => {
     addToCart,
     cartItems,
     removeFromCart,
-    getCartItemsByUserId // Add getCartItemsByUserId to context value
+    getCartItemsByUserId,
+    getUserId,
+    clearCart
   };
 
   return (

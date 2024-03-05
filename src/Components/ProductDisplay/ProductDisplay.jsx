@@ -46,8 +46,8 @@ const ProductDisplay = (props) => {
             <div className='productdisplay-right'>
                 <h1>{product.productName}</h1>
                 <div className='productdisplay-right-prices'>
-                    <div className='productdisplay-right-price-old'> ${product.oldPrice} </div>
-                    <div className='productdisplay-right-price-new'> ${product.newPrice}</div>
+                    <div className='productdisplay-right-price-old'> RS {product.oldPrice} </div>
+                    <div className='productdisplay-right-price-new'> RS {product.newPrice}</div>
                 </div>
                 <div className='productdisplay-right-description'>
                     {product.description}
@@ -59,7 +59,7 @@ const ProductDisplay = (props) => {
                         {availableSizes.map((size, index) => (
                             <div
                                 key={index}
-                                className={`size-option ${selectedSize === size ? 'selected' : ''}`}
+                                className={`size-option RS{selectedSize === size ? 'selected' : ''}`}
                                 onClick={() => handleSizeSelection(size)}
                             >
                                 {size}

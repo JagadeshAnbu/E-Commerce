@@ -1,3 +1,4 @@
+
 import React, { useContext, useEffect } from 'react';
 import './CartItems.css';
 import remove_icon from '../Assets/cart_cross_icon.png';
@@ -19,8 +20,8 @@ const CartItems = () => {
 
   useEffect(() => {
     // Fetch cart items initially or when cartItems context state changes
-    // fetchCartItems(); // <-- Add your fetch cart items function here if needed
-  }, [cartItems]); // Add any dependencies for fetching cart items
+    // fetchCartItems();
+  }, [cartItems]); 
 
   return (
     <div className='cartitems'>
@@ -43,7 +44,7 @@ const CartItems = () => {
             <div className="cartitems-format cartitems-format-main">
               <img src={cartItem.product.image} alt="" className='carticon-product-icon' />
               <p>{cartItem.product.productName}</p>
-              <p>${cartItem.product.newPrice}</p>
+              <p>RS {cartItem.product.newPrice}</p>
               <div className="productdisplay-right-quantity">
                 <div className='productdisplay-right-quantity-controls'>
                   <button className="quantity-btn" onClick={() => decreaseQuantity(productId)}>-</button>
@@ -51,7 +52,7 @@ const CartItems = () => {
                   <button className="quantity-btn" onClick={() => increaseQuantity(productId)}>+</button>
                 </div>
               </div>
-              <p>${cartItem.product.newPrice * cartItem.quantity}</p>
+              <p>RS {cartItem.product.newPrice * cartItem.quantity}</p>
               <img className='cartitems-remove-icon' src={remove_icon} onClick={() => { removeFromCart(productId) }} alt="" />
             </div>
           </div>
@@ -66,7 +67,7 @@ const CartItems = () => {
             {/* Subtotal */}
             <div className='cartitems-total-item'>
               <p>Subtotal</p>
-              <p>${getTotalCartAmount()}</p>
+              <p>RS {getTotalCartAmount()}</p>
             </div>
             <hr />
             {/* Shipping fee */}
@@ -78,7 +79,7 @@ const CartItems = () => {
             {/* Total amount */}
             <div className="cartitems-total-item">
               <h3>Total</h3>
-              <h3>${getTotalCartAmount()}</h3>
+              <h3>RS {getTotalCartAmount()}</h3>
             </div>
           </div>
           {/* Proceed to checkout button */}
